@@ -25,12 +25,14 @@ export class BookManagementComponent implements OnInit {
     this.createForm = new FormGroup({
       'title': new FormControl(null, Validators.required),
       'desc': new FormControl(null, Validators.required),
+      'quantity': new FormControl(null, Validators.required),
       'categoryId': new FormControl(null, Validators.required)
     });
 
     this.updateForm = new FormGroup({
       'title': new FormControl(null, Validators.required),
       'desc': new FormControl(null, Validators.required),
+      'quantity': new FormControl(null, Validators.required),
       'categoryId': new FormControl(null, Validators.required)
     });
 
@@ -79,11 +81,13 @@ export class BookManagementComponent implements OnInit {
     }
     const title = this.createForm.value.title;
     const desc = this.createForm.value.desc;
+    const quantity = this.createForm.value.quantity;
     const categoryId = this.createForm.value.categoryId;
 
     const book = {
       title: title,
       desc: desc,
+      quantity: quantity,
       categoryId: categoryId
     };
 
@@ -107,6 +111,7 @@ export class BookManagementComponent implements OnInit {
     this.chosenBook = book;
     this.updateForm.get('title').setValue(book.title);
     this.updateForm.get('desc').setValue(book.desc);
+    this.updateForm.get('quantity').setValue(book.quantity);
     this.updateForm.get('categoryId').setValue(book.category.id);
   }
 
@@ -123,12 +128,14 @@ export class BookManagementComponent implements OnInit {
     }
     const title = this.updateForm.value.title;
     const desc = this.updateForm.value.desc;
+    const quantity = this.updateForm.value.quantity;
     const categoryId = this.updateForm.value.categoryId;
 
     const book: Book = {
       id: this.chosenBook.id,
       title: title,
       desc: desc,
+      quantity: quantity,
       categoryId: categoryId,
       isDeleted: this.chosenBook.isDeleted
     };
@@ -149,7 +156,16 @@ export class BookManagementComponent implements OnInit {
     this.updateForm.reset();
   }
 
-  onDelete(book: Book) {
+  onDelete(bookDetail: BookDetail) {
+    const book: Book = {
+      id: bookDetail.id,
+      title: bookDetail.title,
+      desc: bookDetail.desc,
+      quantity: bookDetail.quantity,
+      categoryId: bookDetail.category.id,
+      isDeleted: true
+    };
+
     this.isLoading = true;
     this.dbHelperService.deleteBook(book).subscribe(
       resData => {

@@ -22,6 +22,7 @@ export interface Book{
   id?: string,
   title: string,
   desc: string,
+  quantity: number,
   categoryId: string,
   isDeleted: boolean
 }
@@ -30,6 +31,7 @@ export interface BookDetail{
   id?: string,
   title: string,
   desc: string,
+  quantity: number,
   category: Category,
   isDeleted: boolean
 }
@@ -206,26 +208,6 @@ export class DbHelperService {
     )
   }
 
-  // getAllBookDetails(books: Book[]) {
-  //   return this.getAllCategories()
-  //   .pipe(
-  //     map( categories => {
-  //       const result: BookDetail[] = [];
-  //       books.forEach( book => {
-  //         result.push(
-  //           {
-  //             title: book.title,
-  //             desc: book.desc,
-  //             category: this.getCategoryById(categories, book.categoryId),
-  //             isDeleted: book.isDeleted
-  //           }
-  //         );
-  //       })
-  //       return result;
-  //     })
-  //   );
-  // }
-
   getAllBookDetails(books: Book[], categories: Category[]) {
     const result: BookDetail[] = [];
     books.forEach( book => {
@@ -234,6 +216,7 @@ export class DbHelperService {
           id: book.id,
           title: book.title,
           desc: book.desc,
+          quantity: book.quantity,
           category: this.getCategoryById(categories, book.categoryId),
           isDeleted: book.isDeleted
         }
@@ -263,6 +246,7 @@ export class DbHelperService {
   createBook(book : {
     title: string,
     desc: string,
+    quantity: number,
     categoryId: string
   })
   {
@@ -271,6 +255,7 @@ export class DbHelperService {
       {
         title: book.title,
         desc: book.desc,
+        quantity: book.quantity,
         categoryId: book.categoryId,
         isDeleted: false
       }
@@ -282,6 +267,7 @@ export class DbHelperService {
       [book.id]:{
         title: book.title,
         desc: book.desc,
+        quantity: book.quantity,
         categoryId: book.categoryId,
         isDeleted: book.isDeleted
       }
@@ -295,6 +281,7 @@ export class DbHelperService {
       [book.id]:{
         title: book.title,
         desc: book.desc,
+        quantity: book.quantity,
         categoryId: book.categoryId,
         isDeleted: true
       }
