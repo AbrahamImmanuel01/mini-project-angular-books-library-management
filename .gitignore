@@ -9,6 +9,7 @@
 
 # dependencies
 /node_modules
+.angular
 
 # angular versions
 package.json
