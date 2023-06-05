@@ -14,6 +14,8 @@ Run `npm install admin-lte@^3.2 --save` to install Admin-LTE theme (Requires at 
 
 ## Environment Variables
 
+Unzip `environments.zip` in `/src` directory.
+
 Enter your firebase realtime database URL in `dbUrl` at `environments/environment.ts` and `environments/environment.prod.ts`.
 
 Enter your web API key in `webApiKey` at `environments/environment.ts` and `environments/environment.prod.ts`.
