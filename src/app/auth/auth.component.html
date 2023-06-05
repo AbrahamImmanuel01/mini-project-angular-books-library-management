@@ -1,0 +1,95 @@
+<body class="login-page" style="min-height: 542px;">
+    <div class="login-box">
+        <div class="card card-outline card-primary">
+            <div class="card-header text-center">
+                <a class="h1"><b>Grimoire</b>Keeper</a>
+            </div>
+            <div class="card-body">
+                <p class="login-box-msg">
+                    {{ isLoginMode ? 'Sign in to start your session' : 'Register a new membership'}}
+                </p>
+                <app-error></app-error>
+                <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+                    <span *ngIf="!isLoginMode 
+                        && !authForm.get('username')!.valid 
+                        && authForm.get('username')!.touched" 
+                        class="input-group mg-3 error invalid-feedback"
+                    >
+                        Please provide a username
+                    </span>
+                    <div *ngIf="!isLoginMode" class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Username" formControlName="username">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-user"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span *ngIf="!authForm.get('email')!.valid && authForm.get('email')!.touched" class="input-group mg-3 error invalid-feedback">
+                        Please enter a valid email address
+                    </span>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Email" formControlName="email">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span *ngIf="!authForm.get('password')!.valid && authForm.get('password')!.touched" class="input-group mg-3 error invalid-feedback">
+                        Please provide a strong password
+                    </span>
+                    <div class="input-group mb-3">
+                        <input type="password" class="form-control" placeholder="Password" formControlName="password">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span *ngIf="!isLoginMode 
+                        && !authForm.get('rePassword')!.valid 
+                        && authForm.get('rePassword')!.touched" 
+                        class="input-group mg-3 error invalid-feedback"
+                    >
+                        Please confirm your password
+                    </span>
+                    <div *ngIf="!isLoginMode" class="input-group mb-3">
+                        <input type="password" class="form-control" placeholder="Retype password" formControlName="rePassword">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-8">
+                            <!-- <div class="icheck-primary">
+                                <input type="checkbox" id="agreeTerms" name="terms" value="agree">
+                                <label for="agreeTerms">
+                                    I agree to the <a href="#">terms</a>
+                                </label>
+                            </div> -->
+                            <div *ngIf="isLoading" class="float-sm-right">
+                                <app-loading-spinner></app-loading-spinner>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <button type="submit" 
+                                class="btn btn-primary btn-block"
+                                [disabled]="!authForm.valid"
+                            >
+                                {{ isLoginMode ?  'Sign In' : 'Register'}}
+                            </button>
+                        </div>
+
+                    </div>
+                </form>
+                <a class="text-center" (click)="onSwitchMode()">
+                    {{ isLoginMode ?  'Register a new membership' : 'I already have a membership'}}
+                </a>
+            </div>
+        </div>
+    </div>
+</body>

@@ -1,0 +1,185 @@
+<div class="content-wrapper" style="min-height: 463px;">
+
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Category Management</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a>Home</a></li>
+              <li class="breadcrumb-item active">Category Management</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+  
+              <div class="overlay-wrapper">
+                <div *ngIf="isLoading" class="overlay dark">
+                  <i class="fas fa-3x fa-sync-alt fa-spin"></i>
+                </div>
+  
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <button type="button" class="btn btn-success btn-sm" 
+                    data-toggle="modal" data-target="#modal-create">
+                        Add
+                    </button>
+                  </h3>
+                  <div class="card-tools">
+                    <div class="input-group input-group-sm" style="width: 150px;">
+                      <input [(ngModel)]="search" type="text" name="table_search" class="form-control float-right"
+                        placeholder="Search category">
+                      <div class="input-group-append">
+                        <button type="submit" class="btn btn-default">
+                          <i class="fas fa-search"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+  
+                <div class="card-body table-responsive p-0">
+                  <app-error></app-error>
+  
+                  <table class="table table-hover text-nowrap">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let category of categories | notDeleted | filter:search:'name'">
+                        <td>{{category.name}}</td>
+                        <td>{{category.desc}}</td>
+                        <td>
+                          <button type="button" class="btn btn-primary btn-sm mr-2" data-toggle="modal"
+                            data-target="#modal-update" (click)="onShowUpdateModal(category)">
+                            Update
+                          </button>
+                          <button type="submit" class="btn btn-danger btn-sm mr-2" (click)="onDelete(category)">
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="modal-create" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Add New Category</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+  
+            <form [formGroup]="createForm" (ngSubmit)="onCreate()">
+              <div class="modal-body">
+                <span *ngIf="!createForm.get('name')!.valid 
+                      && createForm.get('name')!.touched" 
+                      class="input-group mg-3 error invalid-feedback"
+                >
+                  Please provide a name
+                </span>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control" placeholder="Name" formControlName="name">
+                  <div class="input-group-append">
+                    <div class="input-group-text">
+                      <span class="fas fa-tag"></span>
+                    </div>
+                  </div>
+                </div>
+                <span *ngIf="!createForm.get('desc')!.valid 
+                      && createForm.get('desc')!.touched" 
+                      class="input-group mg-3 error invalid-feedback"
+                >
+                  Please provide a description
+                </span>
+                <div class="input-group">
+                  <input type="text" class="form-control" placeholder="Description" formControlName="desc">
+                  <div class="input-group-append">
+                    <div class="input-group-text">
+                      <span class="fas fa-file-invoice"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer justify-content-between">
+                <button #btnCloseCreate type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" [disabled]="!createForm.valid">Save changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+  
+      <div class="modal fade" id="modal-update" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Update Category</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+  
+            <form [formGroup]="updateForm" (ngSubmit)="onUpdate()">
+              <div class="modal-body">
+                <span *ngIf="!updateForm.get('name')!.valid 
+                      && updateForm.get('name')!.touched" 
+                      class="input-group mg-3 error invalid-feedback"
+                >
+                  Please provide a name
+                </span>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control" placeholder="Name" formControlName="name">
+                  <div class="input-group-append">
+                    <div class="input-group-text">
+                      <span class="fas fa-tag"></span>
+                    </div>
+                  </div>
+                </div>
+                <span *ngIf="!updateForm.get('desc')!.valid 
+                      && updateForm.get('desc')!.touched" 
+                      class="input-group mg-3 error invalid-feedback"
+                >
+                  Please provide a description
+                </span>
+                <div class="input-group">
+                  <input type="text" class="form-control" placeholder="Description" formControlName="desc">
+                  <div class="input-group-append">
+                    <div class="input-group-text">
+                      <span class="fas fa-file-invoice"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer justify-content-between">
+                <button #btnCloseUpdate type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" [disabled]="!updateForm.valid">Save changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  </div>
