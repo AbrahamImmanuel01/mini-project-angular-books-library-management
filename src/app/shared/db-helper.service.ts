@@ -40,6 +40,7 @@ export interface BookIssue{
   id?: string,
   borrowDate: number,
   dueDate: number,
+  returnDate: number,
   isReturned: boolean,
   finePerDay: number,
   revenue: number,
@@ -52,6 +53,7 @@ export interface BookIssueDetail{
   id?: string,
   borrowDate: Date,
   dueDate: Date,
+  returnDate: Date,
   isReturned: boolean,
   finePerDay: number,
   revenue: number,
@@ -346,6 +348,7 @@ export class DbHelperService {
           id: bookIssue.id,
           borrowDate: new Date(bookIssue.borrowDate),
           dueDate: new Date(bookIssue.dueDate),
+          returnDate: (!bookIssue.returnDate) ? null : new Date(bookIssue.returnDate),
           isReturned: bookIssue.isReturned,
           finePerDay: bookIssue.finePerDay,
           revenue: bookIssue.revenue,
@@ -369,6 +372,7 @@ export class DbHelperService {
       {
         borrowDate: new Date().getTime(),
         dueDate: new Date().getTime() + 1209600000, // 2 weeks
+        returnDate: null,
         isReturned: false,
         finePerDay: bookIssue.finePerDay,
         revenue: 0,
@@ -384,6 +388,7 @@ export class DbHelperService {
       [bookIssue.id]:{
         borrowDate: bookIssue.borrowDate,
         dueDate: bookIssue.dueDate,
+        returnDate: bookIssue.returnDate,
         isReturned: bookIssue.isReturned,
         finePerDay: bookIssue.finePerDay,
         revenue: bookIssue.revenue,
@@ -401,6 +406,7 @@ export class DbHelperService {
       [bookIssue.id]:{
         borrowDate: bookIssue.borrowDate,
         dueDate: bookIssue.dueDate,
+        returnDate: bookIssue.returnDate,
         isReturned: bookIssue.isReturned,
         finePerDay: bookIssue.finePerDay,
         revenue: bookIssue.revenue,

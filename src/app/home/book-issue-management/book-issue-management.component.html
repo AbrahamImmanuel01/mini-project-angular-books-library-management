@@ -46,6 +46,7 @@
                       <th>Borrowed Book</th>
                       <th>Borrow Date</th>
                       <th>Due Date</th>
+                      <th>Return Date</th>
                       <th>Fine (/day)</th>
                       <th>Status</th>
                       <th>Revenue</th>
@@ -58,6 +59,7 @@
                       <td>{{bookIssue.book.title}}</td>
                       <td>{{bookIssue.borrowDate | date:'medium'}}</td>
                       <td>{{bookIssue.dueDate | date:'medium'}}</td>
+                      <td>{{bookIssue.returnDate | date:'medium'}}</td>
                       <td>{{bookIssue.finePerDay}} $</td>
                       <td>{{bookIssue.isReturned ? 'Returned' : isLate(bookIssue.dueDate) ? 'Overdue' : 'Borrowed' }}</td>
                       <td>{{bookIssue.revenue}} $</td>
