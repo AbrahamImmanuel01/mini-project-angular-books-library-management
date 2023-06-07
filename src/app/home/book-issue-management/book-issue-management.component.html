@@ -1,76 +1,158 @@
 <div class="content-wrapper" style="min-height: 463px;">
 
-    <div class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0">Book Issue Management</h1>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a>Home</a></li>
-              <li class="breadcrumb-item active">Book Issue Management</li>
-            </ol>
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Book Issue Management</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a>Home</a></li>
+            <li class="breadcrumb-item active">Book Issue Management</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="card">
+
+            <div class="overlay-wrapper">
+              <div *ngIf="isLoading" class="overlay dark">
+                <i class="fas fa-3x fa-sync-alt fa-spin"></i>
+              </div>
+
+              <div class="card-header">
+                <h3 class="card-title">
+                  <button type="button" class="btn btn-success btn-sm" 
+                  data-toggle="modal" data-target="#modal-create">
+                      Add
+                  </button>
+                </h3>
+              </div>
+
+              <div class="card-body table-responsive p-0">
+                <app-error></app-error>
+
+                <table class="table table-hover text-nowrap">
+                  <thead>
+                    <tr>
+                      <th>Username</th>
+                      <th>Borrowed Book</th>
+                      <th>Borrow Date</th>
+                      <th>Due Date</th>
+                      <th>Return Date</th>
+                      <th>Fine (/day)</th>
+                      <th>Status</th>
+                      <th>Revenue</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let bookIssue of bookIssues | notDeleted">
+                      <td>{{bookIssue.userDetail.username}}</td>
+                      <td>{{bookIssue.book.title}}</td>
+                      <td>{{bookIssue.borrowDate | date:'medium'}}</td>
+                      <td>{{bookIssue.dueDate | date:'medium'}}</td>
+                      <td>{{bookIssue.returnDate | date:'medium'}}</td>
+                      <td>{{bookIssue.finePerDay}} $</td>
+                      <td>{{bookIssue.isReturned ? 'Returned' : isLate(bookIssue.dueDate) ? 'Overdue' : 'Borrowed' }}</td>
+                      <td>{{bookIssue.revenue}} $</td>
+                      <td>
+                        <button type="button" class="btn btn-primary btn-sm mr-2" 
+                        (click)="onReturn(bookIssue)" [disabled]="bookIssue.isReturned">
+                          Return Book
+                        </button>
+                        <button type="submit" class="btn btn-danger btn-sm mr-2" (click)="onDelete(bookIssue)">
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-
-    <div class="content">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-lg-6">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                </p>
-                <a class="card-link">Card link</a>
-                <a class="card-link">Another link</a>
-              </div>
-            </div>
-            <div class="card card-primary card-outline">
-              <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                </p>
-                <a class="card-link">Card link</a>
-                <a class="card-link">Another link</a>
-              </div>
-            </div>
+    <div class="modal fade" id="modal-create" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Add New Book Issue</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
           </div>
 
-          <div class="col-lg-6">
-            <div class="card">
-              <div class="card-header">
-                <h5 class="m-0">Featured</h5>
+          <form [formGroup]="createForm" (ngSubmit)="onCreate()">
+            <div class="modal-body">
+              <span *ngIf="!createForm.get('userDetailId')!.valid 
+                    && createForm.get('userDetailId')!.touched" 
+                    class="input-group mg-3 error invalid-feedback"
+              >
+                Please pick a user
+              </span>
+              <div class="input-group mb-3">
+                <select class="form-control" formControlName="userDetailId">
+                  <option *ngFor="let user of users | notDeleted" [value]="user.id">
+                    {{user.username}}
+                  </option>
+                </select>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="fas fa-user"></span>
+                  </div>
+                </div>
               </div>
-              <div class="card-body">
-                <h6 class="card-title">Special title treatment</h6>
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                <a class="btn btn-primary">Go somewhere</a>
+              <span *ngIf="!createForm.get('bookId')!.valid 
+                    && createForm.get('bookId')!.touched" 
+                    class="input-group mg-3 error invalid-feedback"
+              >
+                Please pick a book
+              </span>
+              <div class="input-group mb-3">
+                <select class="form-control" formControlName="bookId">
+                  <option *ngFor="let book of books | notDeleted" [value]="book.id" [disabled]="book.quantity <= 0">
+                    {{book.title}} - stock: {{book.quantity}}
+                  </option>
+                </select>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="fas fa-book"></span>
+                  </div>
+                </div>
+              </div>
+              <span *ngIf="!createForm.get('finePerDay')!.valid 
+                    && createForm.get('finePerDay')!.touched" 
+                    class="input-group mg-3 error invalid-feedback"
+              >
+                Please provide a fine (/day) if customer is late
+              </span>
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Fine per day" formControlName="finePerDay">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="fas fa-dollar-sign"></span>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="card card-primary card-outline">
-              <div class="card-header">
-                <h5 class="m-0">Featured</h5>
-              </div>
-              <div class="card-body">
-                <h6 class="card-title">Special title treatment</h6>
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                <a class="btn btn-primary">Go somewhere</a>
-              </div>
+            <div class="modal-footer justify-content-between">
+              <button #btnCloseCreate type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary" [disabled]="!createForm.valid">Save changes</button>
             </div>
-          </div>
-
+          </form>
         </div>
-
       </div>
     </div>
 
   </div>
+</div>
