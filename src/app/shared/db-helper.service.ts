@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -33,6 +33,30 @@ export interface BookDetail{
   desc: string,
   quantity: number,
   category: Category,
+  isDeleted: boolean
+}
+
+export interface BookIssue{
+  id?: string,
+  borrowDate: number,
+  dueDate: number,
+  isReturned: boolean,
+  finePerDay: number,
+  revenue: number,
+  userDetailId: string,
+  bookId: string,
+  isDeleted: boolean
+}
+
+export interface BookIssueDetail{
+  id?: string,
+  borrowDate: Date,
+  dueDate: Date,
+  isReturned: boolean,
+  finePerDay: number,
+  revenue: number,
+  userDetail: UserDetail,
+  book: Book,
   isDeleted: boolean
 }
 
@@ -77,6 +101,18 @@ export class DbHelperService {
         return result;
       })
     );
+  }
+
+  getUserDetailById(users: UserDetail[], id: string): UserDetail {
+    let result: UserDetail = null;
+    users.some( user => {
+      if(user.id === id) {
+        result = user;
+        return true;
+      }
+      return false;
+    })
+    return result;
   }
 
   createUserDetail(userDetail : {
@@ -225,22 +261,16 @@ export class DbHelperService {
     return result;
   }
 
-  getBookById(id: string){
-    // return this.getAllCategories()
-    // .pipe(
-    //   map( users => {
-    //     let result = null;
-    //     users.some( user => {
-    //       // mirip foreach, return true untuk break dari loop
-    //       if(user.authId === id) {
-    //         result = user;
-    //         return true;
-    //       }
-    //       return false;
-    //     });
-    //     return result;
-    //   })
-    // );
+  getBookById(books: Book[], id: string): Book {
+    let result: Book = null;
+    books.some( book => {
+      if(book.id === id) {
+        result = book;
+        return true;
+      }
+      return false;
+    })
+    return result;
   }
 
   createBook(book : {
@@ -290,4 +320,97 @@ export class DbHelperService {
     return this.httpClient.patch(this.dbUrl + '/books.json', data);
   }
   // ------------END-OF-BOOKS------------
+
+  // ------------BOOK-ISSUES------------
+  getAllBookIssues(){
+    return this.httpClient.get<{[key: string] : BookIssue}>(this.dbUrl + '/book-issues.json')
+    .pipe(
+      map( responseData => {
+        const bookIssue: BookIssue[] = [];
+        for(const key in responseData){
+          if(responseData.hasOwnProperty(key)){
+            bookIssue.push({...responseData[key], id: key})
+          }
+        }
+        console.log(bookIssue);
+        return bookIssue;
+      })
+    )
+  }
+
+  getAllBookIssueDetails(bookIssues: BookIssue[], users: UserDetail[], books: Book[]) {
+    const result: BookIssueDetail[] = [];
+    bookIssues.forEach( bookIssue => {
+      result.push(
+        {
+          id: bookIssue.id,
+          borrowDate: new Date(bookIssue.borrowDate),
+          dueDate: new Date(bookIssue.dueDate),
+          isReturned: bookIssue.isReturned,
+          finePerDay: bookIssue.finePerDay,
+          revenue: bookIssue.revenue,
+          userDetail: this.getUserDetailById(users, bookIssue.userDetailId),
+          book: this.getBookById(books, bookIssue.bookId),
+          isDeleted: bookIssue.isDeleted
+        }
+      );
+    })
+    return result;
+  }
+
+  createBookIssue(bookIssue : {
+    finePerDay: number,
+    userDetailId: string,
+    bookId: string,
+  })
+  {
+    return this.httpClient.post<{ name: string }>(
+      this.dbUrl + '/book-issues.json',
+      {
+        borrowDate: new Date().getTime(),
+        dueDate: new Date().getTime() + 1209600000, // 2 weeks
+        isReturned: false,
+        finePerDay: bookIssue.finePerDay,
+        revenue: 0,
+        userDetailId: bookIssue.userDetailId,
+        bookId: bookIssue.bookId,
+        isDeleted: false
+      }
+    );
+  }
+
+  updateBookIssue(bookIssue: BookIssue){
+    const data = {
+      [bookIssue.id]:{
+        borrowDate: bookIssue.borrowDate,
+        dueDate: bookIssue.dueDate,
+        isReturned: bookIssue.isReturned,
+        finePerDay: bookIssue.finePerDay,
+        revenue: bookIssue.revenue,
+        userDetailId: bookIssue.userDetailId,
+        bookId: bookIssue.bookId,
+        isDeleted: bookIssue.isDeleted
+      }
+    }
+
+    return this.httpClient.patch(this.dbUrl + '/book-issues.json', data);
+  }
+
+  deleteBookIssue(bookIssue: BookIssue){
+    const data = {
+      [bookIssue.id]:{
+        borrowDate: bookIssue.borrowDate,
+        dueDate: bookIssue.dueDate,
+        isReturned: bookIssue.isReturned,
+        finePerDay: bookIssue.finePerDay,
+        revenue: bookIssue.revenue,
+        userDetailId: bookIssue.userDetailId,
+        bookId: bookIssue.bookId,
+        isDeleted: true
+      }
+    }
+
+    return this.httpClient.patch(this.dbUrl + '/book-issues.json', data);
+  }
+  // ------------END-OF-BOOK-ISSUES------------
 }
